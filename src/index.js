@@ -6,15 +6,20 @@ const authRoute = require('./routes/auth.route.js')
 const app = express()
 app.use(express.json())
 
-// Connect to MongoDB
-connectDB()
+// ✅ Skip DB connection if running in test mode
+if (process.env.NODE_ENV !== 'test') {
+    connectDB()
+}
 
-// Mount auth routes at /api/auth
+// Mount routes
 app.use('/api/auth', authRoute)
+app.use('/api/dashboard', require('./routes/dashboard.route.js'))
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`)
+    })
+}
 
 module.exports = app
